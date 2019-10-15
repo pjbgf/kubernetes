@@ -23,7 +23,7 @@ import (
 	"strings"
 	"testing"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -7223,6 +7223,66 @@ func TestValidatePod(t *testing.T) {
 				Namespace: "ns",
 				Annotations: map[string]string{
 					core.SeccompContainerAnnotationKeyPrefix + "foo": "localhost/foo",
+				},
+			},
+			Spec: validPodSpec(nil),
+		},
+		{ // kubernetes default seccomp profile
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "123",
+				Namespace: "ns",
+				Annotations: map[string]string{
+					core.SeccompPodAnnotationKey: "kubernetes/default",
+				},
+			},
+			Spec: validPodSpec(nil),
+		},
+		{ // kubernetes default seccomp profile for a container
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "123",
+				Namespace: "ns",
+				Annotations: map[string]string{
+					core.SeccompContainerAnnotationKeyPrefix + "foo": "kubernetes/default",
+				},
+			},
+			Spec: validPodSpec(nil),
+		},
+		{ // kubernetes default audit seccomp profile
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "123",
+				Namespace: "ns",
+				Annotations: map[string]string{
+					core.SeccompPodAnnotationKey: "kubernetes/default-audit",
+				},
+			},
+			Spec: validPodSpec(nil),
+		},
+		{ // kubernetes default audit seccomp profile for a container
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "123",
+				Namespace: "ns",
+				Annotations: map[string]string{
+					core.SeccompContainerAnnotationKeyPrefix + "foo": "kubernetes/default-audit",
+				},
+			},
+			Spec: validPodSpec(nil),
+		},
+		{ // kubernetes audit verbose seccomp profile
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "123",
+				Namespace: "ns",
+				Annotations: map[string]string{
+					core.SeccompPodAnnotationKey: "kubernetes/audit-verbose",
+				},
+			},
+			Spec: validPodSpec(nil),
+		},
+		{ // kubernetes audit verbose seccomp profile for a container
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "123",
+				Namespace: "ns",
+				Annotations: map[string]string{
+					core.SeccompContainerAnnotationKeyPrefix + "foo": "kubernetes/audit-verbose",
 				},
 			},
 			Spec: validPodSpec(nil),

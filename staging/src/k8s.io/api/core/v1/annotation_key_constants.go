@@ -52,6 +52,15 @@ const (
 	// This is now deprecated and should be replaced by SeccompProfileRuntimeDefault.
 	DeprecatedSeccompProfileDockerDefault string = "docker/default"
 
+	// SeccompProfileKubernetesDefault represents the default seccomp profile that is container runtime independent.
+	SeccompProfileKubernetesDefault string = "kubernetes/default"
+
+	// SeccompProfileKubernetesDefaultAudit represents the complain mode for the default seccomp profile.
+	SeccompProfileKubernetesDefaultAudit string = "kubernetes/default-audit"
+
+	// SeccompProfileKubernetesAuditVerbose represents a verbose seccomp profile that is container runtime independent.
+	SeccompProfileKubernetesAuditVerbose string = "kubernetes/audit-verbose"
+
 	// PreferAvoidPodsAnnotationKey represents the key of preferAvoidPods data (json serialized)
 	// in the Annotations of a Node.
 	PreferAvoidPodsAnnotationKey string = "scheduler.alpha.kubernetes.io/preferAvoidPods"

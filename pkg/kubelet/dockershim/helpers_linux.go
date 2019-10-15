@@ -30,7 +30,7 @@ import (
 	"github.com/blang/semver"
 	dockertypes "github.com/docker/docker/api/types"
 	dockercontainer "github.com/docker/docker/api/types/container"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	runtimeapi "k8s.io/cri-api/pkg/apis/runtime/v1alpha2"
 )
 
@@ -57,6 +57,22 @@ func getSeccompDockerOpts(seccompProfile string) ([]dockerOpt, error) {
 	if seccompProfile == v1.SeccompProfileRuntimeDefault || seccompProfile == v1.DeprecatedSeccompProfileDockerDefault {
 		// return nil so docker will load the default seccomp profile
 		return nil, nil
+	}
+
+	if strings.HasPrefix(seccompProfile, "kubernetes/") {
+		switch seccompProfile {
+		case v1.SeccompProfileKubernetesDefault:
+			return []dockerOpt{{"seccomp", string(SeccompProfileKubernetesDefaultJSON), v1.SeccompProfileKubernetesDefault}}, nil
+
+		case v1.SeccompProfileKubernetesDefaultAudit:
+			return []dockerOpt{{"seccomp", string(SeccompProfileKubernetesDefaultAuditJSON), v1.SeccompProfileKubernetesDefaultAudit}}, nil
+
+		case v1.SeccompProfileKubernetesAuditVerbose:
+			return []dockerOpt{{"seccomp", string(SeccompProfileKubernetesAuditVerboseJSON), v1.SeccompProfileKubernetesAuditVerbose}}, nil
+
+		default:
+			return nil, fmt.Errorf("unknown seccomp profile option: %s", seccompProfile)
+		}
 	}
 
 	if !strings.HasPrefix(seccompProfile, "localhost/") {

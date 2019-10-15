@@ -31,7 +31,7 @@ import (
 
 	"k8s.io/klog"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/resource"
 	apimachineryvalidation "k8s.io/apimachinery/pkg/api/validation"
@@ -3519,12 +3519,21 @@ func validatePodAffinity(podAffinity *core.PodAffinity, fldPath *field.Path) fie
 }
 
 func ValidateSeccompProfile(p string, fldPath *field.Path) field.ErrorList {
-	if p == core.SeccompProfileRuntimeDefault || p == core.DeprecatedSeccompProfileDockerDefault {
+	switch p {
+	case core.SeccompProfileRuntimeDefault:
+		return nil
+	case core.DeprecatedSeccompProfileDockerDefault:
+		return nil
+	case core.SeccompProfileKubernetesDefault:
+		return nil
+	case core.SeccompProfileKubernetesDefaultAudit:
+		return nil
+	case core.SeccompProfileKubernetesAuditVerbose:
+		return nil
+	case "unconfined":
 		return nil
 	}
-	if p == "unconfined" {
-		return nil
-	}
+
 	if strings.HasPrefix(p, "localhost/") {
 		return validateLocalDescendingPath(strings.TrimPrefix(p, "localhost/"), fldPath)
 	}

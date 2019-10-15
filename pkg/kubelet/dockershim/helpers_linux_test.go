@@ -27,7 +27,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 func TestGetSeccompSecurityOpts(t *testing.T) {
@@ -89,6 +89,48 @@ func TestLoadSeccompLocalhostProfiles(t *testing.T) {
 	}, {
 		msg:            "Relative profile path should return error",
 		seccompProfile: "localhost/fixtures/test",
+		expectedOpts:   nil,
+		expectErr:      true,
+	}}
+
+	for i, test := range tests {
+		opts, err := getSeccompSecurityOpts(test.seccompProfile, '=')
+		if test.expectErr {
+			assert.Error(t, err, fmt.Sprintf("TestCase[%d]: %s", i, test.msg))
+			continue
+		}
+		assert.NoError(t, err, "TestCase[%d]: %s", i, test.msg)
+		assert.Len(t, opts, len(test.expectedOpts), "TestCase[%d]: %s", i, test.msg)
+		for _, opt := range test.expectedOpts {
+			assert.Contains(t, opts, opt, "TestCase[%d]: %s", i, test.msg)
+		}
+	}
+}
+
+func TestLoadSeccompKubernetesProfiles(t *testing.T) {
+	tests := []struct {
+		msg            string
+		seccompProfile string
+		expectedOpts   []string
+		expectErr      bool
+	}{{
+		msg:            "Seccomp kubernetes/default profile should return correct seccomp profile",
+		seccompProfile: "kubernetes/default",
+		expectedOpts:   []string{`seccomp=` + string(SeccompProfileKubernetesDefaultJSON)},
+		expectErr:      false,
+	}, {
+		msg:            "Seccomp kubernetes/default-audit profile should return correct seccomp profile",
+		seccompProfile: "kubernetes/default-audit",
+		expectedOpts:   []string{"seccomp=" + string(SeccompProfileKubernetesDefaultAuditJSON)},
+		expectErr:      false,
+	}, {
+		msg:            "Seccomp kubernetes/audit-verbose profile should return correct seccomp profile",
+		seccompProfile: "kubernetes/audit-verbose",
+		expectedOpts:   []string{"seccomp=" + string(SeccompProfileKubernetesAuditVerboseJSON)},
+		expectErr:      false,
+	}, {
+		msg:            "Non-existent profile should return error",
+		seccompProfile: "kubernetes/somethingelse",
 		expectedOpts:   nil,
 		expectErr:      true,
 	}}
