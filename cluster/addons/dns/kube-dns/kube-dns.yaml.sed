@@ -82,7 +82,7 @@ spec:
       labels:
         k8s-app: kube-dns
       annotations:
-        seccomp.security.alpha.kubernetes.io/pod: 'runtime/default'
+        seccomp.security.alpha.kubernetes.io/pod: 'kubernetes/default'
         prometheus.io/port: "10054"
         prometheus.io/scrape: "true"
     spec:
